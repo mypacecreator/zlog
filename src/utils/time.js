@@ -22,13 +22,28 @@ function getCurrentDate() {
 }
 
 /**
- * HH:MM形式の妥当性チェック
- * @param {string} timeStr - チェックする時刻文字列
- * @returns {boolean} 妥当であればtrue
+ * 時刻文字列のパースと正規化
+ * @param {string} timeStr - チェックする時刻文字列（H:MM または HH:MM 形式）
+ * @returns {string|null} 正規化されたHH:MM形式の時刻、不正な場合はnull
  */
 function parseTimeString(timeStr) {
-  const timeRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
-  return timeRegex.test(timeStr);
+  const timeRegex = /^([0-9]{1,2}):([0-9]{1,2})$/;
+  const match = timeStr.match(timeRegex);
+
+  if (!match) {
+    return null;
+  }
+
+  const hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+
+  // 妥当性チェック
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+    return null;
+  }
+
+  // HH:MM形式に正規化（0埋め）
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
 module.exports = {

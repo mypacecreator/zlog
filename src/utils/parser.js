@@ -14,9 +14,10 @@ function parseArgs(args) {
   let time = null;
   let startIndex = 0;
 
-  // 第一引数が時刻指定かチェック
-  if (parseTimeString(args[0])) {
-    time = args[0];
+  // 第一引数が時刻指定かチェック（正規化された時刻を取得）
+  const parsedTime = parseTimeString(args[0]);
+  if (parsedTime) {
+    time = parsedTime;  // 正規化された時刻（HH:MM形式）
     startIndex = 1;
   }
 
@@ -53,7 +54,8 @@ function parseArgs(args) {
 function parseContent(content, mode, time) {
   // :（半角コロン）をメインデリミタとし、全角：や｜も代替として受け付ける
   const delimiterRegex = /\s*[:：｜]\s*/;
-  const parts = content.split(delimiterRegex);
+  // 最初のデリミタだけで分割（最大2つに分割）
+  const parts = content.split(delimiterRegex, 2);
 
   // デリミタがない場合は、案件名を空、全体を作業内容とする
   if (parts.length < 2 || !parts[1]) {
