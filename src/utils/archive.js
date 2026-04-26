@@ -25,7 +25,7 @@ function appendToArchive(date, lines) {
   }
 
   const existingLines = new Set(content.split('\n'));
-  const newLines = lines.filter((l) => !existingLines.has(l));
+  const newLines = [...new Set(lines)].filter((l) => !existingLines.has(l));
 
   if (newLines.length === 0) {
     console.warn('アーカイブに既に同じ内容が存在します（スキップ）');

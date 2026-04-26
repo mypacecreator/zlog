@@ -11,13 +11,17 @@ function calcDuration(startTime, endTime) {
   return mins >= 0 ? mins : 0;
 }
 
-function buildPrompt(logs, categories) {
-  const inputLines = logs
+function buildInputLines(logs) {
+  return logs
     .map((log, i) => {
       const dur = calcDuration(log.startTime, log.endTime);
       return `${i + 1}. ${log.date},${log.startTime},${log.endTime},${log.project},${log.task},${dur}分`;
     })
     .join('\n');
+}
+
+function buildPrompt(logs, categories) {
+  const inputLines = buildInputLines(logs);
 
   const system = [
     'あなたは業務ログの整理専門AIです。',
@@ -35,12 +39,7 @@ function buildPrompt(logs, categories) {
 }
 
 function applyCustomTemplate(template, logs, categories) {
-  const inputLines = logs
-    .map((log, i) => {
-      const dur = calcDuration(log.startTime, log.endTime);
-      return `${i + 1}. ${log.date},${log.startTime},${log.endTime},${log.project},${log.task},${dur}分`;
-    })
-    .join('\n');
+  const inputLines = buildInputLines(logs);
 
   const filled = template
     .replaceAll('{CATEGORIES}', categories)
