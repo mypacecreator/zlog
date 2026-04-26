@@ -16,22 +16,22 @@ async function handleList(options) {
 
   // ログ読み込み
   const allLogs = readAllLogs(date);
-  const todayLogs = allLogs.filter((l) => l.date === date);
+  const targetDateLogs = allLogs.filter((l) => l.date === date);
 
-  if (todayLogs.length === 0) {
-    console.log(`${date} のログが見つかりません。`);
+  if (targetDateLogs.length === 0) {
+    console.error(`${date} のログが見つかりません。`);
     return;
   }
 
-  // ヘッダー出力
-  console.log(`\n${date}のログ (${todayLogs.length}件)\n`);
+  // ヘッダー出力（stderrへ）
+  console.error(`\n${date}のログ (${targetDateLogs.length}件)\n`);
 
-  // CSV形式で出力
-  todayLogs.forEach((log) => {
+  // CSV形式で出力（stdoutへ）
+  targetDateLogs.forEach((log) => {
     console.log(log.rawLine);
   });
 
-  console.log('');
+  console.error('');
 }
 
 module.exports = { handleList };
