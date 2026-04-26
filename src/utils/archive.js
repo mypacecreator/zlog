@@ -32,7 +32,16 @@ function appendToArchive(date, lines) {
     return;
   }
 
-  content += newLines.map((l) => `${l}\n`).join('');
+  // セクション末尾（次の見出し直前）に挿入
+  const sectionStart = content.indexOf(heading);
+  const sectionRest = content.slice(sectionStart);
+  const nextHeadingOffset = sectionRest.indexOf('\n## ', 1);
+  const insertPos = nextHeadingOffset === -1
+    ? content.length
+    : sectionStart + nextHeadingOffset + 1;
+
+  const insertedLines = newLines.map((l) => `${l}\n`).join('');
+  content = `${content.slice(0, insertPos)}${insertedLines}${content.slice(insertPos)}`;
   fs.writeFileSync(filePath, content, 'utf-8');
 }
 

@@ -1,6 +1,6 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { readAllLogs } = require('../utils/csv');
-const { getCurrentDate } = require('../utils/time');
+const { getCurrentDate, parseDateString } = require('../utils/time');
 const { getApiKey, getModel, getCategories, getPromptTemplate } = require('../utils/config');
 const { appendToArchive, readArchiveSection } = require('../utils/archive');
 
@@ -42,8 +42,8 @@ function applyCustomTemplate(template, logs, categories) {
     .join('\n');
 
   const filled = template
-    .replace('{CATEGORIES}', categories)
-    .replace('{LOGS}', inputLines);
+    .replaceAll('{CATEGORIES}', categories)
+    .replaceAll('{LOGS}', inputLines);
 
   return {
     system: 'あなたは業務ログの整理専門AIです。指定されたフォーマットで出力してください。',
@@ -52,7 +52,16 @@ function applyCustomTemplate(template, logs, categories) {
 }
 
 async function handleSummarize(options) {
-  const date = options.date || getCurrentDate();
+  let date;
+  if (options.date) {
+    date = parseDateString(options.date);
+    if (!date) {
+      console.error(`エラー: 無効な日付形式です "${options.date}"。YYYY-MM-DD 形式で指定してください。`);
+      process.exit(1);
+    }
+  } else {
+    date = getCurrentDate();
+  }
 
   const apiKey = getApiKey();
   if (!apiKey) {
@@ -109,7 +118,12 @@ async function handleSummarize(options) {
     process.exit(1);
   }
 
-  const rawOutput = response.content[0].text.trim();
+  const textBlock = response.content.find((b) => b.type === 'text');
+  if (!textBlock) {
+    console.error('エラー: AIからテキスト応答が得られませんでした。');
+    process.exit(1);
+  }
+  const rawOutput = textBlock.text.trim();
   const outputLines = rawOutput.split('\n').map((l) => l.trim()).filter(Boolean);
 
   if (outputLines.length !== completedLogs.length) {
