@@ -22,13 +22,13 @@ program
 
     switch (parsed.mode) {
       case 'START':
-        handleStart(parsed.time, parsed.project, parsed.task);
+        handleStart(parsed.date, parsed.time, parsed.project, parsed.task);
         break;
       case 'END':
-        handleEnd(parsed.time);
+        handleEnd(parsed.date, parsed.time);
         break;
       case 'CONTINUE':
-        handleContinue(parsed.time, parsed.project, parsed.task);
+        handleContinue(parsed.date, parsed.time, parsed.project, parsed.task);
         break;
       default:
         console.error('エラー: 不明なモード');

@@ -24,9 +24,29 @@ function findProjectRoot() {
 
 const PROJECT_ROOT = findProjectRoot();
 const ZLOG_DIR = path.join(PROJECT_ROOT, 'logs');
-const LOG_FILE = path.join(ZLOG_DIR, 'daily_log.csv');
+
+/**
+ * 日付から月ごとのログファイルパスを取得
+ * @param {string} date - YYYY-MM-DD形式の日付
+ * @returns {string} ログファイルのパス（YYYY-MM.csv）
+ */
+function getLogFilePath(date) {
+  // YYYY-MM-DDからYYYY-MMを抽出
+  const yearMonth = date.substring(0, 7); // 'YYYY-MM'
+  return path.join(ZLOG_DIR, `${yearMonth}.csv`);
+}
+
+/**
+ * 日付からYYYY-MM形式を取得
+ * @param {string} date - YYYY-MM-DD形式の日付
+ * @returns {string} YYYY-MM形式
+ */
+function getYearMonth(date) {
+  return date.substring(0, 7);
+}
 
 module.exports = {
   ZLOG_DIR,
-  LOG_FILE,
+  getLogFilePath,
+  getYearMonth,
 };

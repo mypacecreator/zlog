@@ -22,6 +22,38 @@ function getCurrentDate() {
 }
 
 /**
+ * 日付文字列のパースと妥当性チェック
+ * @param {string} dateStr - チェックする日付文字列（YYYY-MM-DD形式）
+ * @returns {string|null} 妥当な場合はそのまま返す、不正な場合はnull
+ */
+function parseDateString(dateStr) {
+  const dateRegex = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+  const match = dateStr.match(dateRegex);
+
+  if (!match) {
+    return null;
+  }
+
+  const year = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10);
+  const day = parseInt(match[3], 10);
+
+  // 妥当性チェック
+  if (year < 1900 || year > 2100) {
+    return null;
+  }
+  if (month < 1 || month > 12) {
+    return null;
+  }
+  if (day < 1 || day > 31) {
+    return null;
+  }
+
+  // YYYY-MM-DD形式に正規化（0埋め）
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+/**
  * 時刻文字列のパースと正規化
  * @param {string} timeStr - チェックする時刻文字列（H:MM または HH:MM 形式）
  * @returns {string|null} 正規化されたHH:MM形式の時刻、不正な場合はnull
@@ -50,4 +82,5 @@ module.exports = {
   getCurrentTime,
   getCurrentDate,
   parseTimeString,
+  parseDateString,
 };

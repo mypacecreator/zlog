@@ -1,8 +1,8 @@
 const fs = require('fs');
-const { ZLOG_DIR, LOG_FILE } = require('../constants');
+const { ZLOG_DIR, getLogFilePath } = require('../constants');
 
 /**
- * ~/zlog ディレクトリの自動作成
+ * logsディレクトリの自動作成
  */
 function ensureZlogDirectory() {
   if (!fs.existsSync(ZLOG_DIR)) {
@@ -11,17 +11,19 @@ function ensureZlogDirectory() {
 }
 
 /**
- * 全ログの読み込み
+ * 指定月の全ログの読み込み
+ * @param {string} date - YYYY-MM-DD形式の日付
  * @returns {Array} ログの配列（各要素は { date, startTime, endTime, project, task, rawLine } ）
  */
-function readAllLogs() {
+function readAllLogs(date) {
   ensureZlogDirectory();
 
-  if (!fs.existsSync(LOG_FILE)) {
+  const logFile = getLogFilePath(date);
+  if (!fs.existsSync(logFile)) {
     return [];
   }
 
-  const content = fs.readFileSync(LOG_FILE, 'utf-8').trim();
+  const content = fs.readFileSync(logFile, 'utf-8').trim();
   if (!content) {
     return [];
   }
@@ -40,11 +42,12 @@ function readAllLogs() {
 }
 
 /**
- * 未終了ログの検索（全日付から）
+ * 未終了ログの検索（当月のみ）
+ * @param {string} date - YYYY-MM-DD形式の日付
  * @returns {Object|null} 未終了ログまたはnull
  */
-function getUnfinishedLog() {
-  const logs = readAllLogs();
+function getUnfinishedLog(date) {
+  const logs = readAllLogs(date);
   for (let i = logs.length - 1; i >= 0; i--) {
     if (logs[i].endTime === '') {
       return { log: logs[i], index: i };
@@ -54,11 +57,12 @@ function getUnfinishedLog() {
 }
 
 /**
- * 最後に完了したログの取得（全日付から）
+ * 最後に完了したログの取得（当月のみ）
+ * @param {string} date - YYYY-MM-DD形式の日付
  * @returns {Object|null} 完了済みログまたはnull
  */
-function getLastFinishedLog() {
-  const logs = readAllLogs();
+function getLastFinishedLog(date) {
+  const logs = readAllLogs(date);
   for (let i = logs.length - 1; i >= 0; i--) {
     if (logs[i].endTime !== '') {
       return logs[i];
@@ -77,17 +81,19 @@ function getLastFinishedLog() {
  */
 function appendLog(date, startTime, endTime, project, task) {
   ensureZlogDirectory();
+  const logFile = getLogFilePath(date);
   const line = `${date},${startTime},${endTime},${project},${task}\n`;
-  fs.appendFileSync(LOG_FILE, line, 'utf-8');
+  fs.appendFileSync(logFile, line, 'utf-8');
 }
 
 /**
  * ログの更新（特定行の終了時刻を更新）
+ * @param {string} date - YYYY-MM-DD形式の日付
  * @param {number} index - 更新する行のインデックス
  * @param {string} endTime - 新しい終了時刻
  */
-function updateLogs(index, endTime) {
-  const logs = readAllLogs();
+function updateLogs(date, index, endTime) {
+  const logs = readAllLogs(date);
   if (index < 0 || index >= logs.length) {
     console.error('エラー: 更新対象のログが見つかりません');
     process.exit(1);
@@ -98,7 +104,8 @@ function updateLogs(index, endTime) {
     .map((log) => `${log.date},${log.startTime},${log.endTime},${log.project},${log.task}`)
     .join('\n') + '\n';
 
-  fs.writeFileSync(LOG_FILE, updatedContent, 'utf-8');
+  const logFile = getLogFilePath(date);
+  fs.writeFileSync(logFile, updatedContent, 'utf-8');
 }
 
 module.exports = {
