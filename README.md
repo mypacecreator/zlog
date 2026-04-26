@@ -351,7 +351,7 @@ zlog list | grep "プロジェクトA"
 zlog list > today.csv
 
 # ヘッダーも含めて保存したい場合
-zlog list 2>&1 > today_with_header.txt
+zlog list > today_with_header.txt 2>&1
 
 # メッセージを非表示にしてCSVのみ表示
 zlog list 2>/dev/null
