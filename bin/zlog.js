@@ -4,6 +4,7 @@ const { program } = require('commander');
 const { parseArgs } = require('../src/utils/parser');
 const { handleStart, handleEnd, handleContinue } = require('../src/commands/log');
 const { handleSummarize } = require('../src/commands/summarize');
+const { handleList } = require('../src/commands/list');
 const { handleConfigList, handleConfigSet, handleConfigGet } = require('../src/commands/config');
 const packageJson = require('../package.json');
 
@@ -15,6 +16,19 @@ program
   .option('-d, --date <date>', '対象日付（YYYY-MM-DD）、省略時は今日')
   .action((options) => {
     handleSummarize(options).catch((err) => {
+      console.error('エラー:', err.message);
+      process.exit(1);
+    });
+  });
+
+// --- Subcommand: list (alias: l) ---
+program
+  .command('list')
+  .alias('l')
+  .description('当日または指定日のログ一覧を表示')
+  .option('-d, --date <date>', '対象日付(YYYY-MM-DD)、省略時は今日')
+  .action((options) => {
+    handleList(options).catch((err) => {
       console.error('エラー:', err.message);
       process.exit(1);
     });
@@ -54,7 +68,7 @@ program
     }
 
     // サブコマンドはここでは処理しない（commanderが既にルーティング済み）
-    const subcommands = ['summarize', 's', 'config'];
+    const subcommands = ['summarize', 's', 'list', 'l', 'config'];
     if (subcommands.includes(args[0])) return;
 
     const parsed = parseArgs(args);

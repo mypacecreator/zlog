@@ -1,6 +1,6 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { readAllLogs } = require('../utils/csv');
-const { getCurrentDate, parseDateString } = require('../utils/time');
+const { resolveTargetDate } = require('../utils/time');
 const { getApiKey, getModel, getCategories, getPromptTemplate } = require('../utils/config');
 const { appendToArchive, readArchiveSection } = require('../utils/archive');
 
@@ -52,16 +52,8 @@ function applyCustomTemplate(template, logs, categories) {
 }
 
 async function handleSummarize(options) {
-  let date;
-  if (options.date) {
-    date = parseDateString(options.date);
-    if (!date) {
-      console.error(`エラー: 無効な日付形式です "${options.date}"。YYYY-MM-DD 形式で指定してください。`);
-      process.exit(1);
-    }
-  } else {
-    date = getCurrentDate();
-  }
+  // 日付解決
+  const date = resolveTargetDate(options.date);
 
   const apiKey = getApiKey();
   if (!apiKey) {

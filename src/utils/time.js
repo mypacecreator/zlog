@@ -78,9 +78,29 @@ function parseTimeString(timeStr) {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
+/**
+ * オプションから対象日付を解決
+ * @param {string|undefined} dateOption - 日付オプション（YYYY-MM-DD形式）、省略時は今日
+ * @returns {string} YYYY-MM-DD形式の日付
+ */
+function resolveTargetDate(dateOption) {
+  if (!dateOption) {
+    return getCurrentDate();
+  }
+
+  const date = parseDateString(dateOption);
+  if (!date) {
+    console.error(`エラー: 無効な日付形式です "${dateOption}"。YYYY-MM-DD 形式で指定してください。`);
+    process.exit(1);
+  }
+
+  return date;
+}
+
 module.exports = {
   getCurrentTime,
   getCurrentDate,
   parseTimeString,
   parseDateString,
+  resolveTargetDate,
 };
