@@ -24,6 +24,9 @@ function findProjectRoot() {
 
 const PROJECT_ROOT = findProjectRoot();
 const ZLOG_DIR = path.join(PROJECT_ROOT, 'logs');
+const ARCHIVES_DIR = path.join(PROJECT_ROOT, 'archives');
+const CONFIG_FILE = path.join(PROJECT_ROOT, 'config.json');
+const CONFIG_DIR = path.join(PROJECT_ROOT, 'config');
 
 /**
  * 日付から月ごとのログファイルパスを取得
@@ -46,7 +49,11 @@ function getYearMonth(date) {
 }
 
 module.exports = {
+  PROJECT_ROOT,
   ZLOG_DIR,
+  ARCHIVES_DIR,
+  CONFIG_FILE,
+  CONFIG_DIR,
   getLogFilePath,
   getYearMonth,
 };
