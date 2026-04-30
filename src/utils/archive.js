@@ -57,4 +57,10 @@ function readArchiveSection(date) {
   return nextHeading === -1 ? rest.trimEnd() : rest.slice(0, nextHeading).trimEnd();
 }
 
-module.exports = { appendToArchive, readArchiveSection };
+function parseArchiveLine(line) {
+  const match = line.match(/^\[(\d{4}-\d{2}-\d{2})\]\s+(\d{2}:\d{2})-(\d{2}:\d{2}).*\|\s*([A-E]\d*)\./);
+  if (!match) return null;
+  return { date: match[1], startTime: match[2], endTime: match[3], categoryCode: match[4] };
+}
+
+module.exports = { appendToArchive, readArchiveSection, parseArchiveLine };
