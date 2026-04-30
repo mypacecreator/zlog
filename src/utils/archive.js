@@ -58,7 +58,7 @@ function readArchiveSection(date) {
 }
 
 function parseArchiveLine(line) {
-  const match = line.match(/^\[(\d{4}-\d{2}-\d{2})\]\s+(\d{2}:\d{2})-(\d{2}:\d{2}).*\|\s*([A-E]\d*)\./);
+  const match = line.match(/^\[(\d{4}-\d{2}-\d{2})\]\s+(\d{2}:\d{2})-(\d{2}:\d{2})[^|]*\|[^|]*\|[^|]*\|\s*([A-E]\d*)\./);
   if (!match) return null;
   return { date: match[1], startTime: match[2], endTime: match[3], categoryCode: match[4] };
 }
