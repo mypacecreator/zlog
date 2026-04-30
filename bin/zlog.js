@@ -27,6 +27,7 @@ program
   .alias('l')
   .description('当日または指定日のログ一覧を表示')
   .option('-d, --date <date>', '対象日付(YYYY-MM-DD)、省略時は今日')
+  .option('-c, --category <code>', 'カテゴリコードで絞り込み (例: A, A1, B)')
   .action((options) => {
     handleList(options).catch((err) => {
       console.error('エラー:', err.message);
