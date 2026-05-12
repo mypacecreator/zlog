@@ -23,8 +23,8 @@ function findProjectRoot() {
 }
 
 const PROJECT_ROOT = findProjectRoot();
-const ZLOG_DIR = path.join(PROJECT_ROOT, 'logs');
-const ARCHIVES_DIR = path.join(PROJECT_ROOT, 'archives');
+const ZLOG_DIR = path.join(PROJECT_ROOT, '_logs');
+const ARCHIVES_DIR = path.join(PROJECT_ROOT, '_archives');
 const CONFIG_FILE = path.join(PROJECT_ROOT, 'config.json');
 const CONFIG_DIR = path.join(PROJECT_ROOT, 'config');
 

@@ -249,11 +249,11 @@ zlog s -d 2026-04-25
 要約結果は月別MDファイルに自動追記されます。
 
 ```
-logs/2026-04.csv         # ← ロギング元データ（変更なし）
-archives/2026-04.md      # ← 要約・アーカイブ先
+_logs/2026-04.csv         # ← ロギング元データ（変更なし）
+_archives/2026-04.md      # ← 要約・アーカイブ先
 ```
 
-`archives/YYYY-MM.md` の構成：
+`_archives/YYYY-MM.md` の構成：
 
 ```markdown
 ## 2026-04-26: 実績報告
@@ -339,7 +339,7 @@ zlog list -c A3         # A3（コンサルティング／打合せ）のみ
 zlog list -d 2026-04-25 -c A
 ```
 
-> **前提:** カテゴリ情報は `zlog summarize` が生成するアーカイブ（`archives/YYYY-MM.md`）から参照します。`summarize` を実行していない日はエラーになります。
+> **前提:** カテゴリ情報は `zlog summarize` が生成するアーカイブ（`_archives/YYYY-MM.md`）から参照します。`summarize` を実行していない日はエラーになります。
 
 ### 出力例
 
@@ -441,16 +441,16 @@ zlog config get api_key
 
 ```bash
 # 今月のログを表示
-cat /Users/kei/projects/_zlog/logs/2026-04.csv
+cat /Users/kei/projects/_zlog/_logs/2026-04.csv
 
 # 特定の月のログを表示
-cat /Users/kei/projects/_zlog/logs/2026-03.csv
+cat /Users/kei/projects/_zlog/_logs/2026-03.csv
 
 # または（プロジェクトディレクトリから）
-cat logs/2026-04.csv
+cat _logs/2026-04.csv
 
 # すべての月のログを表示
-cat logs/*.csv
+cat _logs/*.csv
 ```
 
 ## トラブルシューティング
@@ -558,7 +558,7 @@ zlog 2026-04-30 23:30 /
 
 ```bash
 # 前月のログを確認
-cat logs/2026-04.csv | grep ",,"  # 終了時刻が空（未終了）の行を検索
+cat _logs/2026-04.csv | grep ",,"  # 終了時刻が空（未終了）の行を検索
 ```
 
 ## ライセンス
