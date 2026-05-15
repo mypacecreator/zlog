@@ -71,13 +71,26 @@ function getArchiveLines(date) {
 
 function updateArchiveLine(date, index, newCategoryLabel) {
   const filePath = getArchiveFilePath(date);
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const dataLines = getArchiveLines(date);
-  const targetLine = dataLines[index];
-  const fields = targetLine.split('|');
-  fields[3] = ` ${newCategoryLabel} `;
-  const newLine = fields.join('|');
-  fs.writeFileSync(filePath, content.replace(targetLine, newLine), 'utf-8');
+  const heading = `## ${date}: 実績報告`;
+  const allLines = fs.readFileSync(filePath, 'utf-8').split('\n');
+
+  let inSection = false;
+  let dataLinesSeen = 0;
+  for (let i = 0; i < allLines.length; i++) {
+    if (allLines[i] === heading) { inSection = true; continue; }
+    if (inSection && allLines[i].startsWith('## ')) break;
+    if (inSection && allLines[i].trim()) {
+      if (dataLinesSeen === index) {
+        const fields = allLines[i].split('|');
+        fields[3] = ` ${newCategoryLabel} `;
+        allLines[i] = fields.join('|');
+        break;
+      }
+      dataLinesSeen++;
+    }
+  }
+
+  fs.writeFileSync(filePath, allLines.join('\n'), 'utf-8');
 }
 
 module.exports = { appendToArchive, readArchiveSection, parseArchiveLine, getArchiveLines, updateArchiveLine };
