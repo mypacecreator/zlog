@@ -280,7 +280,25 @@ export ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
 
 ### カテゴリ体系のカスタマイズ
 
-`config/categories.md` を直接編集するとカテゴリ定義を変更できます。
+`config/categories.json` を編集するとカテゴリ定義を変更できます。
+
+```json
+{
+  "_groups": {
+    "A": "クライアントワーク",
+    "B": "自社タスク"
+  },
+  "A1": {
+    "label": "実作業",
+    "emoji": "🛠️",
+    "description": "制作・実装・成果物作成",
+    "examples": ["コーディング", "デザイン作成"]
+  }
+}
+```
+
+- `label` / `emoji`: アーカイブへの出力に使用
+- `description` / `examples`: AI によるカテゴリ判定の精度向上に使用
 
 デフォルトのカテゴリ：
 
@@ -303,6 +321,40 @@ export ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
 以下のログを整形してください:
 {LOGS}
 ```
+
+## カテゴリの手動修正
+
+`zlog summarize` でAIが付与したカテゴリが意図と異なる場合、`zlog fix` で手動修正できます。
+
+### 基本的な使い方
+
+```bash
+# 当日のアーカイブを番号付きで一覧表示
+zlog fix
+zlog f
+
+# 日付を指定して一覧表示
+zlog fix -d 2026-04-25
+
+# 行番号とカテゴリコードを指定して変更
+zlog fix 2 A3
+zlog fix -d 2026-04-25 1 B4
+```
+
+### 操作例
+
+```bash
+# まず一覧を確認
+$ zlog fix
+1. [2026-05-15] 09:00-10:00 | ProjectX | 要件定義 | A1. 実作業 🛠️ | 所要：60分
+2. [2026-05-15] 10:00-11:30 | ProjectY | 定例MTG | B3. 作業環境整備 ⚙️ | 所要：90分
+
+# 2件目を A3 に修正
+$ zlog fix 2 A3
+✓ 2件目のカテゴリを変更しました: B3. 作業環境整備 ⚙️ → A3. コンサルティング／打合せ 🧭
+```
+
+> **前提:** `zlog summarize` 実行済みの日のみ操作可能です。
 
 ## ログの確認
 
