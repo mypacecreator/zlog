@@ -67,11 +67,6 @@ function getCategoriesJson() {
 }
 
 function getCategories() {
-  // categories.md が残っている場合はそちらを優先（後方互換）
-  const mdFile = path.join(CONFIG_DIR, 'categories.md');
-  if (fs.existsSync(mdFile)) return fs.readFileSync(mdFile, 'utf-8');
-
-  // categories.json からAI向けマークダウンを生成
   const json = getCategoriesJson();
   const { _groups, ...subcategories } = json;
 
