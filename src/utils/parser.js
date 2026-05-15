@@ -11,6 +11,41 @@ function parseArgs(args) {
     process.exit(1);
   }
 
+  // パターン② / ③: スラッシュ先頭（終了・連続）
+  if (args[0] === '/') {
+    const remaining = args.slice(1);
+    let date = null;
+    let time = null;
+    let startIndex = 0;
+
+    if (startIndex < remaining.length) {
+      const parsedDate = parseDateString(remaining[startIndex]);
+      if (parsedDate) {
+        date = parsedDate;
+        startIndex++;
+      }
+    }
+
+    if (startIndex < remaining.length) {
+      const parsedTime = parseTimeString(remaining[startIndex]);
+      if (parsedTime) {
+        time = parsedTime;
+        startIndex++;
+      }
+    }
+
+    const content = remaining.slice(startIndex).join(' ').trim();
+
+    // パターン② 終了: コンテンツなし
+    if (!content) {
+      return { mode: 'END', date, time, project: null, task: null };
+    }
+
+    // パターン③ 連続: コンテンツあり
+    return parseContent(content, 'CONTINUE', date, time);
+  }
+
+  // パターン① 開始
   let date = null;
   let time = null;
   let startIndex = 0;
@@ -31,7 +66,6 @@ function parseArgs(args) {
     }
   }
 
-  // 残りの引数を結合
   const remainingArgs = args.slice(startIndex).join(' ').trim();
 
   if (!remainingArgs) {
@@ -39,18 +73,6 @@ function parseArgs(args) {
     process.exit(1);
   }
 
-  // パターン② 終了: / のみ
-  if (remainingArgs === '/') {
-    return { mode: 'END', date, time, project: null, task: null };
-  }
-
-  // パターン③ 連続: / で始まり、その後にデリミタと内容がある
-  if (remainingArgs.startsWith('/ ')) {
-    const content = remainingArgs.substring(2).trim();
-    return parseContent(content, 'CONTINUE', date, time);
-  }
-
-  // パターン① 開始: デリミタで案件と作業内容を分割
   return parseContent(remainingArgs, 'START', date, time);
 }
 
