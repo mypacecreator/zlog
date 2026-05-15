@@ -63,4 +63,34 @@ function parseArchiveLine(line) {
   return { date: match[1], startTime: match[2], endTime: match[3], categoryCode: match[4] };
 }
 
-module.exports = { appendToArchive, readArchiveSection, parseArchiveLine };
+function getArchiveLines(date) {
+  const section = readArchiveSection(date);
+  if (!section) return [];
+  return section.split('\n').filter((l) => l.trim() && !l.startsWith('##'));
+}
+
+function updateArchiveLine(date, index, newCategoryLabel) {
+  const filePath = getArchiveFilePath(date);
+  const heading = `## ${date}: 実績報告`;
+  const allLines = fs.readFileSync(filePath, 'utf-8').split('\n');
+
+  let inSection = false;
+  let dataLinesSeen = 0;
+  for (let i = 0; i < allLines.length; i++) {
+    if (allLines[i] === heading) { inSection = true; continue; }
+    if (inSection && allLines[i].startsWith('## ')) break;
+    if (inSection && allLines[i].trim()) {
+      if (dataLinesSeen === index) {
+        const fields = allLines[i].split('|');
+        fields[3] = ` ${newCategoryLabel} `;
+        allLines[i] = fields.join('|');
+        break;
+      }
+      dataLinesSeen++;
+    }
+  }
+
+  fs.writeFileSync(filePath, allLines.join('\n'), 'utf-8');
+}
+
+module.exports = { appendToArchive, readArchiveSection, parseArchiveLine, getArchiveLines, updateArchiveLine };

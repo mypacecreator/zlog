@@ -6,6 +6,7 @@ const { handleStart, handleEnd, handleContinue } = require('../src/commands/log'
 const { handleSummarize } = require('../src/commands/summarize');
 const { handleList } = require('../src/commands/list');
 const { handleConfigList, handleConfigSet, handleConfigGet } = require('../src/commands/config');
+const { handleFix } = require('../src/commands/fix');
 const packageJson = require('../package.json');
 
 // --- Subcommand: summarize (alias: s) ---
@@ -16,6 +17,19 @@ program
   .option('-d, --date <date>', '対象日付（YYYY-MM-DD）、省略時は今日')
   .action((options) => {
     handleSummarize(options).catch((err) => {
+      console.error('エラー:', err.message);
+      process.exit(1);
+    });
+  });
+
+// --- Subcommand: fix (alias: f) ---
+program
+  .command('fix [line] [code]')
+  .alias('f')
+  .description('アーカイブのカテゴリを手動修正')
+  .option('-d, --date <date>', '対象日付（YYYY-MM-DD）、省略時は今日')
+  .action((line, code, options) => {
+    handleFix(options, line, code).catch((err) => {
       console.error('エラー:', err.message);
       process.exit(1);
     });
@@ -69,7 +83,7 @@ program
     }
 
     // サブコマンドはここでは処理しない（commanderが既にルーティング済み）
-    const subcommands = ['summarize', 's', 'list', 'l', 'config'];
+    const subcommands = ['summarize', 's', 'fix', 'f', 'list', 'l', 'config'];
     if (subcommands.includes(args[0])) return;
 
     const parsed = parseArgs(args);
