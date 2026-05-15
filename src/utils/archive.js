@@ -63,4 +63,21 @@ function parseArchiveLine(line) {
   return { date: match[1], startTime: match[2], endTime: match[3], categoryCode: match[4] };
 }
 
-module.exports = { appendToArchive, readArchiveSection, parseArchiveLine };
+function getArchiveLines(date) {
+  const section = readArchiveSection(date);
+  if (!section) return [];
+  return section.split('\n').filter((l) => l.trim() && !l.startsWith('##'));
+}
+
+function updateArchiveLine(date, index, newCategoryLabel) {
+  const filePath = getArchiveFilePath(date);
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const dataLines = getArchiveLines(date);
+  const targetLine = dataLines[index];
+  const fields = targetLine.split('|');
+  fields[3] = ` ${newCategoryLabel} `;
+  const newLine = fields.join('|');
+  fs.writeFileSync(filePath, content.replace(targetLine, newLine), 'utf-8');
+}
+
+module.exports = { appendToArchive, readArchiveSection, parseArchiveLine, getArchiveLines, updateArchiveLine };
