@@ -16,8 +16,12 @@ async function handleFix(options, lineNum, categoryCode) {
     return;
   }
 
+  if (!/^\d+$/.test(lineNum)) {
+    console.error(`エラー: 行番号には正の整数を指定してください。`);
+    process.exit(1);
+  }
   const idx = parseInt(lineNum, 10) - 1;
-  if (isNaN(idx) || idx < 0 || idx >= lines.length) {
+  if (idx < 0 || idx >= lines.length) {
     console.error(`エラー: 行番号 ${lineNum} は範囲外です（1〜${lines.length}）。`);
     process.exit(1);
   }
