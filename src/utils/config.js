@@ -89,6 +89,13 @@ function getCategories() {
   return lines.join('\n');
 }
 
+function getClassificationFlow() {
+  const json = getCategoriesJson();
+  const flow = json._classificationFlow;
+  if (!flow || !Array.isArray(flow)) return '';
+  return flow.join('\n');
+}
+
 function parseCategoryLabel(code) {
   const json = getCategoriesJson();
   const cat = json[code];
@@ -102,4 +109,4 @@ function getPromptTemplate() {
   return null;
 }
 
-module.exports = { readConfig, writeConfig, getApiKey, getModel, getCategoriesJson, getCategories, parseCategoryLabel, getPromptTemplate };
+module.exports = { readConfig, writeConfig, getApiKey, getModel, getCategoriesJson, getCategories, getClassificationFlow, parseCategoryLabel, getPromptTemplate };
